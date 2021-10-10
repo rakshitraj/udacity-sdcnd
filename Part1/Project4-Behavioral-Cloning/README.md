@@ -53,7 +53,25 @@ The model includes RELU layers to introduce nonlinearity (code lines 86-90), and
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 14-15). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 14-15). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track. this ensures that hte results do not overfit.
+
+To ensure that, the model itsel, does not overfit, the following checkes are placed.
+  1. Inbuilt into the network
+  
+  `The first layer of the network performs image normalization. The normalizer is hard-coded and is not adjusted in the learning process. Performing normalization in the network allows the normalization scheme to be altered with the network architecture and to be accelerated via GPU processing.`
+  https://arxiv.org/pdf/1604.07316v1.pdf
+  
+  2. Using early stopping using callbacks
+
+```python
+model.compile(loss='mse', optimizer='adam')
+early_stopping_callback = EarlyStopping(monitor='val_loss', patience=epochs_to_wait_for_improve)
+checkpoint_callback = ModelCheckpoint(model_name+'.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+history_object = model.fit_generator(train_generator, samples_per_epoch= \
+            len(train_samples*6), validation_data=validation_generator, \
+            nb_val_samples=len(validation_samples), nb_epoch=3, verbose=1, callbacks=[early_stopping_callback, checkpoint_callback])
+```
+
 
 #### 3. Model parameter tuning
 

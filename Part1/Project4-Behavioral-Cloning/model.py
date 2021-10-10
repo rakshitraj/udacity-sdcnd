@@ -97,9 +97,11 @@ model.add(Dense(1))
 print('Training...')
 
 model.compile(loss='mse', optimizer='adam')
+early_stopping_callback = EarlyStopping(monitor='val_loss', patience=epochs_to_wait_for_improve)
+checkpoint_callback = ModelCheckpoint(model_name+'.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 history_object = model.fit_generator(train_generator, samples_per_epoch= \
             len(train_samples*6), validation_data=validation_generator, \
-            nb_val_samples=len(validation_samples), nb_epoch=3, verbose=1)
+            nb_val_samples=len(validation_samples), nb_epoch=3, verbose=1, callbacks=[early_stopping_callback, checkpoint_callback])
 # note, the total training samples are 6 times per epoch counting both original
 # and flipped left, right and center images
 model.save('model.h5')
